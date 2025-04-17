@@ -1,0 +1,18 @@
+# my_list = ['p', 'r', 'o', 'g', 'r', 'a', 'm']
+
+# print("my list = ", my_list)
+# print("my list[2:5] = ", my_list[2:5])
+
+numbers = [1, 2, 3, 4]
+squared = [num * num for num in numbers]
+print(squared)
+
+pairs = [(x,y) for x in [1, 2, 3] for y in ['a', 'b']]
+
+pairs1 = []
+for x in [1, 2, 3]:
+    for y in ['*', '#']:
+        pairs1.append((x, y))
+
+print(pairs1)
+print(pairs)
