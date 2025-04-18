@@ -1,3 +1,5 @@
 INSERT x number
 INSERT y string
-INSERT x string
+ASSIGN x 15
+ASSIGN y 17
+ASSIGN x 'abc'

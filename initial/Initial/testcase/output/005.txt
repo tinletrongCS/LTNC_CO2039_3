@@ -1,1 +1,1 @@
-TypeMismatch: ASSIGN y 17
+Undeclared: ASSIGN x y

@@ -1,3 +1,2 @@
-INSERT a number
-INSERT b
-INSERT c string
+INSERT x number
+ASSIGN y 17

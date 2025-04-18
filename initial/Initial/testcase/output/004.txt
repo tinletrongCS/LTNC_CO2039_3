@@ -1,1 +1,1 @@
-Invalid: INSERT b
+Undeclared: ASSIGN y 17

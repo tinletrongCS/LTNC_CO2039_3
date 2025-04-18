@@ -1,3 +1,10 @@
 INSERT x number
+ASSIGN x 15
 INSERT y string
-ASSIGN z 3
+BEGIN
+INSERT x number
+ASSIGN x 23
+BEGIN
+INSERT y string
+END
+END

@@ -22,13 +22,16 @@ def simulate(list_of_commands):
 
 def process_commands(commands, symtab, result):
     if not commands:
+        if len(symtab) > 1:
+            return result + [str(UnclosedBlock(len(symtab) - 1))]
         return result
     
     command,  *rest = commands
 
+    # No idea here @@
     try:
         new_symtab, output = handle_command(command, symtab)
-        return process_commands(rest, new_symtab, result + [output])
+        return process_commands(rest, new_symtab, result + ([output] if output else []))
     except StaticError as e:
         return [str(e)]
 
@@ -41,10 +44,12 @@ def handle_command(command: str, symtab: list[list[Symbol]]):
         return handle_insert(command, symtab)
     elif action == "ASSIGN":
         return handle_assign(command, symtab)
+    elif action in["BEGIN", "END"]:
+        return handle_begin_end(command, symtab)
     else:
         raise InvalidInstruction(command)
     
-# function for handling insertion
+# function for handling INSERT
 def handle_insert(command: str, symtab: list[list[Symbol]]):
     tokens = command.strip().split()
     if len(tokens) != 3:
@@ -57,7 +62,7 @@ def handle_insert(command: str, symtab: list[list[Symbol]]):
         raise InvalidInstruction(command) # Incorrect syntax
 
     # Redeclared error
-    if any(sym.name == name for block in symtab for sym in block):
+    if any(sym.name == name for sym in symtab[-1]):  # Only search in current scope 
         raise Redeclared(command)
     
     new_block = symtab[-1] + [Symbol(name, typ)]
@@ -65,7 +70,7 @@ def handle_insert(command: str, symtab: list[list[Symbol]]):
     
     return new_symtab, "success"
 
-# helper functions for ASSIGN
+# Helper functions for ASSIGN
 def __valid_const_format(value: str) -> bool:
     return (
         # Int constant
@@ -85,7 +90,7 @@ def __valid_const_format(value: str) -> bool:
         )
     )
 
-# function for handling assignment
+# function for handling ASSIGN
 def handle_assign(command: str, symtab: list[list[Symbol]]):
     tokens = command.strip().split()
     if len(tokens) != 3:
@@ -113,7 +118,7 @@ def handle_assign(command: str, symtab: list[list[Symbol]]):
         )
         # Gán từ 1 biến nhưng chưa khai báo biến đó
         if value_sym is None:
-            raise Undeclared(value)
+            raise Undeclared(command)
         
         # Gán từ 1 biến nhưng không khớp kiểu dữ liệu 
         if value_sym.typ != symbol.typ:
@@ -135,5 +140,11 @@ def handle_assign(command: str, symtab: list[list[Symbol]]):
     return new_symtab, "success"
 
 def handle_begin_end(command: str, symtab: list[list[Symbol]]) -> None:
-
-    return 
+    if command =="BEGIN":
+        return symtab + [[]], None
+    elif command == "END":
+        if len(symtab) == 1: # There only default global scope 
+            raise UnknownBlock()
+        return symtab[:-1], None
+    else:
+        raise InvalidInstruction(command)
