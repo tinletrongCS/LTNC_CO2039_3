@@ -8,7 +8,7 @@ from functools import reduce
 TESTCASE_DIR = os.path.join(os.getcwd(), "testcase")
 INPUT_DIR = os.path.join(TESTCASE_DIR, "input")
 EXPECTED_DIR = os.path.join(TESTCASE_DIR, "expected")
-SOLUTION_DIR = os.path.join(TESTCASE_DIR, "solution")
+SOLUTION_DIR = os.path.join(TESTCASE_DIR, "output")
 
 
 class TestUtils:
