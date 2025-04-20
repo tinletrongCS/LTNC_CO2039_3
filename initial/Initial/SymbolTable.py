@@ -38,14 +38,20 @@ def process_commands(commands, symtab, result):
 # function for processing single command call to the correct function
 def handle_command(command: str, symtab: list[list[Symbol]]):
     tokens = command.strip().split()
-    action = tokens[0]
+    COMMAND = tokens[0]
     
-    if action == "INSERT":
+    if COMMAND == "INSERT":
         return handle_insert(command, symtab)
-    elif action == "ASSIGN":
+    elif COMMAND == "ASSIGN":
         return handle_assign(command, symtab)
-    elif action in["BEGIN", "END"]:
+    elif COMMAND in ["BEGIN", "END"]:
         return handle_begin_end(command, symtab)
+    elif COMMAND == "LOOKUP":
+        return handle_lookup(command, symtab)
+    elif COMMAND == "PRINT":
+        return handle_print(command, symtab)
+    elif COMMAND == "RPRINT":
+        return handle_rprint(command, symtab)
     else:
         raise InvalidInstruction(command)
     
@@ -71,6 +77,7 @@ def handle_insert(command: str, symtab: list[list[Symbol]]):
     return new_symtab, "success"
 
 # Helper functions for ASSIGN
+# Validate constant format
 def __valid_const_format(value: str) -> bool:
     return (
         # Int constant
@@ -110,7 +117,7 @@ def handle_assign(command: str, symtab: list[list[Symbol]]):
     if symbol is None:
         raise Undeclared(command)
     
-    # Nếu value là một biến khác -> phải đã khai báo và đúng kiểu
+    # Nếu value là một biến khác -> phải đc khai báo và đúng kiểu
     if __valid_var_name(value):
         value_sym = next(
             (sym for scope in reversed(symtab) for sym in scope if sym.name == value),
@@ -124,6 +131,7 @@ def handle_assign(command: str, symtab: list[list[Symbol]]):
         if value_sym.typ != symbol.typ:
             raise TypeMismatch(command)
     
+    # Gán bằng 1 hằng giá trị nhưng không khóp kiểu 
     # TypeMismatch error
     elif value.startswith("'"):
         if symbol.typ != "string":
@@ -148,3 +156,34 @@ def handle_begin_end(command: str, symtab: list[list[Symbol]]) -> None:
         return symtab[:-1], None
     else:
         raise InvalidInstruction(command)
+    
+def handle_lookup(command: str, symtab: list[list[Symbol]])->None:
+    tokens = command.strip().split()
+
+    if len(tokens) != 2:
+        raise InvalidInstruction(command)
+    
+    _, name = tokens
+    if not __valid_var_name(name):
+        raise InvalidInstruction(command)
+    
+    # Tìm mức (level) đầu tiên mà danh hiệu (identifier) xuất hiện trong symbol table (từ ngoài vào trong)
+    found = next(
+        ((len(symtab) - 1 - i) for i, block in enumerate(reversed(symtab)) if any(sym.name == name for sym in block)),
+        None
+    )
+
+    if found is None:
+        raise Undeclared(command)
+
+    return symtab, str(found)
+
+def handle_print(command: str, symtab: list[list[Symbol]]) -> None:
+
+
+    return
+
+def handle_rprint(command: str, symtab: list[list[Symbol]]) -> None:
+
+    return
+

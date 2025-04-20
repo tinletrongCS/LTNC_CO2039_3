@@ -1,5 +1,5 @@
 success
 success
 success
-1
-0
+success
+z//1 x//1 y//0
